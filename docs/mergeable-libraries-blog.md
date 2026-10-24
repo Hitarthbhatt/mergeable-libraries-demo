@@ -19,14 +19,7 @@ This happened on a team I worked with, and it took us a week to crack. Here's th
 
 The crime scene:
 
-```mermaid
-graph TD
-    App["MyApp"] --> Support["SupportFeature"]
-    App --> Profile["ProfileFeature"]
-    App --> Core["CoreKit (the junk drawer)"]
-    Support --> Core
-    Profile --> Core
-```
+![MyApp depends on SupportFeature, ProfileFeature and CoreKit; both features depend on CoreKit](https://raw.githubusercontent.com/Hitarthbhatt/mergeable-libraries-demo/main/docs/images/module-graph.png)
 
 All three modules are plain dynamic frameworks, which is what Xcode gives you by default. Here's what they weighed in the Release archive:
 
@@ -119,12 +112,7 @@ Dynamic frameworks build fast and launch slow. Static libraries launch fast and 
 
 ![Why not both](https://media.giphy.com/media/3o85xIO33l7RlmLR4I/giphy.gif)
 
-```mermaid
-flowchart LR
-    F["Your frameworks"] --> C{"Build config?"}
-    C -->|Debug| D["Stay dynamic, re-exported<br/>→ fast builds"]
-    C -->|Release| R["Merged into the app binary<br/>→ fast launch, smaller app"]
-```
+![Debug keeps frameworks dynamic and re-exported; Release merges them into the app binary](https://raw.githubusercontent.com/Hitarthbhatt/mergeable-libraries-demo/main/docs/images/debug-vs-release.png)
 
 **Debug** works the same as before. The app re-exports each framework, so incremental builds stay fast.
 
