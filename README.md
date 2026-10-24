@@ -5,7 +5,7 @@ A tiny modular iOS app that shows two things with real numbers:
 1. **Why `public` makes your modules fat.** The same code, built once with `public` and once with `internal`.
 2. **What Xcode's mergeable libraries do to your app.** The same app, archived as plain dynamic frameworks vs merged.
 
-Companion code for the blog post *Your Modules Are Making Your iOS App Fat. Meet Mergeable Libraries.*
+Companion code for the blog post *My iOS App Got 22% Smaller With One Xcode Setting*
 
 ## Prerequisites
 

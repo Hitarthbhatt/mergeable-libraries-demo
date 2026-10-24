@@ -11,7 +11,7 @@ This happened on a team I worked with, and it took us a week to crack. Here's th
 > - **Victim:** `MyApp`, freshly modularized
 > - **Symptom:** got bigger after we only *moved* code
 > - **Suspects:** ~~Xcode~~ · ~~the CI cache~~ · ~~Mercury in retrograde~~ · `public`
-> - **Fix:** two build settings, **22% smaller**
+> - **Fix:** one build setting, **22% smaller**, **0** frameworks loaded at launch
 
 ---
 
@@ -31,6 +31,8 @@ All three modules are plain dynamic frameworks, which is what Xcode gives you by
 That's a USB cable shipped in a microwave box.
 
 Every dynamic framework is split into four segments, and on arm64 each segment is padded to a 16 KB page, even if it's nearly empty. So each framework pays about **64 KB of packaging** before it holds any code. On top of that, `dyld` has to find, map, and bind every framework separately each time the app launches.
+
+Using CocoaPods with `use_frameworks!`, or dynamic SPM products? Then every dependency is one more passport check at airport security on every cold launch. That's why "I added a few pods and my launch got slower" is such a popular Stack Overflow question.
 
 ![This is fine](https://media.giphy.com/media/QMHoU66sBXqqLqYvGO/giphy.gif)
 
@@ -120,18 +122,16 @@ Dynamic frameworks build fast and launch slow. Static libraries launch fast and 
 
 ---
 
-## The Fix: Two Settings
+## The Fix: One Setting
+
+Select your app target, search Build Settings for **Create Merged Binary**, and set it to **Automatic**:
 
 ```text
-// App target: the easy way
+// App target
 MERGED_BINARY_TYPE = automatic
-
-// Or, for precise control
-MERGED_BINARY_TYPE = manual    // on the app target
-MERGEABLE_LIBRARY = YES        // on each framework to merge
 ```
 
-`automatic` merges every direct framework dependency built in your project. There's one gotcha: **only direct dependencies get merged.** If `CoreKit` reaches the app only through `SupportFeature`, link it to the app target explicitly.
+That's it. `automatic` merges every direct framework dependency built in your project. If you need precise control over what gets merged, use `MERGED_BINARY_TYPE = manual` on the app and `MERGEABLE_LIBRARY = YES` on each framework instead. There's one gotcha: **only direct dependencies get merged.** If `CoreKit` reaches the app only through `SupportFeature`, link it to the app target explicitly.
 
 ---
 
@@ -145,7 +145,7 @@ MERGEABLE_LIBRARY = YES        // on each framework to merge
 | Frameworks `dyld` loads | 3 | **0** |
 | Exported symbols | 3,518 | **1** |
 
-That took two build settings and zero code changes. The demo has three tiny frameworks. Real apps have dozens.
+That took one build setting and zero code changes. The demo has three tiny frameworks. Real apps have dozens.
 
 ---
 
