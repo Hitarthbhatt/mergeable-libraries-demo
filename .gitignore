@@ -1,0 +1,14 @@
+# Xcode / Tuist generated
+*.xcodeproj
+*.xcworkspace
+Derived/
+DerivedData/
+build/
+xcuserdata/
+.swiftpm/
+
+# macOS / editors
+.DS_Store
+.idea/
+.vscode/
+.claude/
